@@ -10,10 +10,14 @@ class doubanwlwz_spider():
         # 创建chrome参数对象
         opt = webdriver.ChromeOptions()
         # 把chrome设置成无界面模式，不论windows还是linux都可以，自动适配对应参数
-        opt.set_headless()
+        opt.add_argument('--no-sandbox')
+        opt.add_argument('--disable-gpu')
+        opt.add_argument('--hide-scrollbars') #隐藏滚动条, 应对一些特殊页面
+        opt.add_argument('--headless') #浏览器不提供可视化页面. 
         # 用的是谷歌浏览器
-        driver = webdriver.Chrome(options=opt)
-        driver=webdriver.Chrome()
+        driver = webdriver.Chrome('/data/chromedriver',options=opt)
+       
+#        driver=webdriver.Chrome('/data/chromedriver')
         self.getInfo(driver)
 
     def writeMysql(self,userName,userConment,userLocation):
