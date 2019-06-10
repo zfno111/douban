@@ -40,11 +40,11 @@ class doubanwlwz_spider():
         # # 输入密码账号
         input1 = driver.find_element_by_xpath('//*[@id="username"]')
         input1.clear()
-        input1.send_keys("18111577822")
+        input1.send_keys("XXXX")
 
         input2 = driver.find_element_by_xpath('//*[@id="password"]')
         input2.clear()
-        input2.send_keys("zf13696270344")
+        input2.send_keys("XXXX4")
 
         # 登录
         bottom = driver.find_element_by_class_name('account-form-field-submit ')
