@@ -4,25 +4,12 @@ import time
 from selenium import webdriver
 import pymysql
 from selenium.webdriver.common.keys import Keys
+from multiprocessing import Pool
 
 class doubanwlwz_spider():
-    def __init__(self):
-        # 创建chrome参数对象
-        opt = webdriver.ChromeOptions()
-        # 把chrome设置成无界面模式，不论windows还是linux都可以，自动适配对应参数
-        opt.add_argument('--no-sandbox')
-        opt.add_argument('--disable-gpu')
-        opt.add_argument('--hide-scrollbars') #隐藏滚动条, 应对一些特殊页面
-        opt.add_argument('--headless') #浏览器不提供可视化页面. 
-        # 用的是谷歌浏览器
-        driver = webdriver.Chrome('/data/chromedriver',options=opt)
-       
-#        driver=webdriver.Chrome('/data/chromedriver')
-        self.getInfo(driver)
-
     def writeMysql(self,userName,userConment,userLocation):
         # 打开数据库连接
-        db = pymysql.connect("123.207.35.161", "zhangfan", "N$nIpms1", "hupo_test")
+        db = pymysql.connect("1XXXX1", "zhXXXan", "NXXXXXs1", "hupo_test")
         # 使用 cursor() 方法创建一个游标对象 cursor
         cursor = db.cursor()
         sql = "insert into userinfo(username,commont,location) values(%s, %s, %s)"
@@ -32,10 +19,21 @@ class doubanwlwz_spider():
         cursor.close()
         db.close()
 
-    def getInfo(self,driver):
+    def getInfo(self,page):
     # 切换到登录框架中来
     # 登录豆瓣网
-        driver = driver
+        opt = webdriver.ChromeOptions()
+    # 用的是谷歌浏览器
+
+    # 把chrome设置成无界面模式，不论windows还是linux都可以，自动适配对应参数
+        opt.add_argument('--no-sandbox')
+        opt.add_argument('--disable-gpu')
+        opt.add_argument('--hide-scrollbars')  # 隐藏滚动条, 应对一些特殊页面
+        opt.add_argument('blink-settings=imagesEnabled=false')  # 不加载图片, 提升速度
+        opt.add_argument('--headless') #浏览器不提供可视化页面. 
+        # 用的是谷歌浏览器
+        driver = webdriver.Chrome('/data/chromedriver',options=opt)
+
         driver.get("http://www.douban.com/")
         driver.switch_to.frame(driver.find_elements_by_tag_name("iframe")[0])
         # 点击"密码登录"
@@ -44,11 +42,11 @@ class doubanwlwz_spider():
         # # 输入密码账号
         input1 = driver.find_element_by_xpath('//*[@id="username"]')
         input1.clear()
-        input1.send_keys("18111577822")
+        input1.send_keys("AAXX2")
 
         input2 = driver.find_element_by_xpath('//*[@id="password"]')
         input2.clear()
-        input2.send_keys("zf13696270344")
+        input2.send_keys("XXX0344")
 
         # 登录
         bottom = driver.find_element_by_class_name('account-form-field-submit ')
@@ -56,10 +54,9 @@ class doubanwlwz_spider():
 
         time.sleep(1)
         #获取全部评论 一共有480页，每个页面20个评论
-
-        for i in range(1, 25):
-            driver.get('https://movie.douban.com/subject/3882715/comments?start={}&limit=20&sort=new_score'.format(i*20))
-            print("开始抓取第%i页面"%(i))
+        for i in  range((page-1)*120,page*120):
+            driver.get('https://movie.douban.com/subject/3882715/comments?start={}&limit=20&sort=new_score'.format(i))
+            print("开始抓取第%i页面"%(page))
             search_window = driver.current_window_handle
             # pageSource=driver.page_source
             # print(pageSource)
@@ -79,7 +76,17 @@ class doubanwlwz_spider():
                     print("用户的居之地是  %s"%(userLocation))
                 except Exception as e:
                     userLocation='NUll'
-                self.writeMysql(userName,userConment,userLocation)
+                self.writeMysql(userName, userConment, userLocation)
                 driver.back()
 
-AAA=doubanwlwz_spider()
+
+if __name__ == '__main__':
+    AAA=doubanwlwz_spider()
+    p = Pool(4)
+    startTime = time.time()
+    for i in range(1, 5):
+        p.apply_async(AAA.getInfo, args=(i,))
+    p.close()
+    p.join()
+    stopTime = time.time()
+    print('Running time: %0.2f Seconds' % (stopTime - startTime))
