@@ -9,7 +9,7 @@ from multiprocessing import Pool
 class doubanwlwz_spider():
     def writeMysql(self,userName,userConment,userLocation):
         # 打开数据库连接
-        db = pymysql.connect("123.207.35.161", "zhangfan", "N$nIpms1", "hupo_test")
+        db = pymysql.connect("123XXXX61", "XXXfan", "XXXXs1", "hupo_test")
         # 使用 cursor() 方法创建一个游标对象 cursor
         cursor = db.cursor()
         sql = "insert into userinfo(username,commont,location) values(%s, %s, %s)"
